@@ -8,7 +8,7 @@ import {
 
 import { OperatorRowProps } from './types.ts';
 
-const OperatorRow = ({ operator, index }: OperatorRowProps) => {
+const OperatorRow = ({ operator, index, addons }: OperatorRowProps) => {
   return (
     <TableRow>
       <TableCell>{index}</TableCell>
@@ -31,6 +31,19 @@ const OperatorRow = ({ operator, index }: OperatorRowProps) => {
       </TableCell>
       <TableCell>{new Date(operator.createdAt).toLocaleString()}</TableCell>
       <TableCell>{operator.isWorking ? 'Active' : 'Inactive'}</TableCell>
+      {addons.map(addon => (
+        <TableCell
+          sx={{
+            maxWidth: '100px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+          key={addon.id}
+        >
+          {addon.text}
+        </TableCell>
+      ))}
     </TableRow>
   );
 };

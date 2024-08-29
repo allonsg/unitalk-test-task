@@ -15,11 +15,12 @@ import OperatorRow from '../OperatorRow';
 import { OPERATORS_API } from '../../api';
 import { StyledTableCell } from './styles.ts';
 
-import { Operator } from '../../types';
+import { Operator, OperatorAddon } from '../../types';
 import { OperatorTableProps } from './types.ts';
 
 const OperatorTable = ({ query }: OperatorTableProps) => {
   const [operators, setOperators] = useState<Operator[]>([]);
+  const [addons, setAddons] = useState<OperatorAddon[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState<string>('name');
@@ -29,15 +30,21 @@ const OperatorTable = ({ query }: OperatorTableProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await OPERATORS_API.getOperators({
+      const operatorData = await OPERATORS_API.getOperators({
         page: page + 1,
         limit: rowsPerPage,
         sortBy,
         order,
         query,
       });
-      if (data) {
-        setOperators(data);
+
+      const addonData = await OPERATORS_API.getOperatorAddons();
+
+      if (operatorData) {
+        setOperators(operatorData);
+      }
+      if (addonData) {
+        setAddons(addonData);
       }
     };
     void fetchData();
@@ -109,7 +116,11 @@ const OperatorTable = ({ query }: OperatorTableProps) => {
                   Дата / Час створення
                 </TableSortLabel>
               </StyledTableCell>
-              <StyledTableCell>fieldName[]</StyledTableCell>
+              {addons.map(addon => (
+                <StyledTableCell key={addon.id}>
+                  {addon.fieldName}
+                </StyledTableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -118,6 +129,7 @@ const OperatorTable = ({ query }: OperatorTableProps) => {
                 key={operator.id}
                 operator={operator}
                 index={page * rowsPerPage + index + 1}
+                addons={addons}
               />
             ))}
           </TableBody>
